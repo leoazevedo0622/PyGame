@@ -20,9 +20,10 @@ first_char_rect = first_character.get_rect(topleft=(350, 300))
 
 main_character = pygame.image.load(
     'graphics/characters/tile000.png').convert_alpha()
-main_rect = main_character.get_rect(topleft=(75, 300))
+main_rect = main_character.get_rect(bottomleft=(75, 300))
+player_grav = 0
 
-main_title = test_font.render('Game Name', False, 'Yellow')
+main_title = test_font.render('Game Name', False, '#E9D5D8')
 title_rect = main_title.get_rect(center=(400, 50))
 
 while True:
@@ -30,26 +31,29 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-        # if event.type == pygame.MOUSEMOTION:
-            # if main_rect.collidepoint(event.pos):
-            # print('tão se batendo')
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if main_rect.collidepoint(event.pos):
+                player_grav = -20
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                player_grav = -20
 
     screen.blit(background, (0, 0))
-    screen.blit(tileGrass1, (50, 300))
+    screen.blit(tileGrass1, (50, 270))
 
-    pygame.draw.rect(screen, 'Dark Blue', title_rect)
-    pygame.draw.rect(screen, 'Dark Blue', title_rect, 10)
+    pygame.draw.rect(screen, '#52ABE6', title_rect)
+    pygame.draw.rect(screen, '#52ABE6', title_rect, 10)
     screen.blit(main_title, (title_rect))
 
-    main_rect.left += 3
-    if main_rect.left > 800:
-        main_rect.right = 0
-
-    # mouse_pos = pygame.mouse.get_pos()
-    # if main_rect.collidepoint(mouse_pos):
-        # print('ó os cara se batendo sksksksk')
-
     screen.blit(first_character, (first_char_rect))
+
+    # Player
+    player_grav += 1
+    main_rect.y += player_grav
+    if main_rect.bottom >= 300:
+        main_rect.bottom = 300
     screen.blit(main_character, (main_rect))
 
     pygame.display.update()
