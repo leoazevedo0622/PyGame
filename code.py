@@ -20,7 +20,7 @@ first_char_rect = first_character.get_rect(topleft=(350, 300))
 
 main_character = pygame.image.load(
     'graphics/characters/tile000.png').convert_alpha()
-main_rect = main_character.get_rect(bottomleft=(75, 300))
+main_rect = main_character.get_rect(bottomleft=(75, 364))
 player_grav = 0
 
 main_title = test_font.render('Game Name', False, '#E9D5D8')
@@ -33,15 +33,24 @@ while True:
             exit()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if main_rect.collidepoint(event.pos):
+            if main_rect.collidepoint(event.pos) and main_rect.bottom == 365:
                 player_grav = -20
 
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_SPACE and main_rect.bottom == 365:
                 player_grav = -20
 
     screen.blit(background, (0, 0))
-    screen.blit(tileGrass1, (50, 270))
+    screen.blit(tileGrass1, (-60, 336))
+    screen.blit(tileGrass1, (0, 336))
+    screen.blit(tileGrass1, (90, 336))
+    screen.blit(tileGrass1, (180, 336))
+    screen.blit(tileGrass1, (270, 336))
+    screen.blit(tileGrass1, (360, 336))
+    screen.blit(tileGrass1, (450, 336))
+    screen.blit(tileGrass1, (540, 336))
+    screen.blit(tileGrass1, (630, 336))
+    screen.blit(tileGrass1, (720, 336))
 
     pygame.draw.rect(screen, '#52ABE6', title_rect)
     pygame.draw.rect(screen, '#52ABE6', title_rect, 10)
@@ -52,8 +61,8 @@ while True:
     # Player
     player_grav += 1
     main_rect.y += player_grav
-    if main_rect.bottom >= 300:
-        main_rect.bottom = 300
+    if main_rect.bottom >= 365:
+        main_rect.bottom = 365
     screen.blit(main_character, (main_rect))
 
     pygame.display.update()
