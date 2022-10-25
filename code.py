@@ -9,17 +9,24 @@ def display_score():
         f'Score: {current_time}', False, '#E9D5D8')
     score_rect = score_surface.get_rect(center=(400, 50))
     screen.blit(score_surface, score_rect)
+    return current_time
 
 
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
 pygame.display.set_caption('Game Name')
 clock = pygame.time.Clock()
-game_active = True
+game_active = False
 start_time = 0
+score = 0
 
 test_font = pygame.font.Font('fonts/SHPinscher-Regular.otf', 50)
 
+game_title_surf = test_font.render('Corre Walter', False, '#ec0909')
+game_title_rect = game_title_surf.get_rect(center=(400, 120))
+
+jump_control = test_font.render('Press Space To Jump', False, '#ec0909')
+jump_control_rect = jump_control.get_rect(center=(400, 300))
 
 background = pygame.image.load('graphics/background2.png').convert()
 
@@ -32,6 +39,12 @@ first_char_rect = first_character.get_rect(topleft=(350, 314))
 main_character = pygame.image.load(
     'graphics/characters/tile000.png').convert_alpha()
 main_rect = main_character.get_rect(bottomleft=(75, 364))
+
+menu_player = pygame.image.load(
+    'graphics/characters/tile000.png').convert_alpha()
+menu_player = pygame.transform.rotozoom(menu_player, 0, 2)
+menu_player_rect = menu_player.get_rect(center=(400, 200))
+
 player_grav = 0
 
 # main_title = test_font.render('Corre Walter!', False, '#E9D5D8')
@@ -95,10 +108,20 @@ while True:
         if first_char_rect.colliderect(main_rect):
             game_active = False
 
-        display_score()
+        score = display_score()
 
     else:
-        screen.fill('Yellow')
+        screen.fill('#5355ac')
+        screen.blit(menu_player, (menu_player_rect))
+
+        your_score = test_font.render(f'Your Score: {score}', False, '#ec0909')
+        your_score_rect = your_score.get_rect(center=(400, 300))
+        if score == 0:
+            screen.blit(jump_control, (jump_control_rect))
+        else:
+            screen.blit(your_score, (your_score_rect))
+
+        screen.blit(game_title_surf, (game_title_rect))
 
     pygame.display.update()
     clock.tick(60)
