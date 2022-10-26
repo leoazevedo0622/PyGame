@@ -1,3 +1,4 @@
+from random import randint
 from sys import exit
 
 import pygame
@@ -10,6 +11,31 @@ def display_score():
     score_rect = score_surface.get_rect(center=(400, 50))
     screen.blit(score_surface, score_rect)
     return current_time
+
+
+def enemy_movement(enemy_list):
+    if enemy_list:
+        for enemy_rect in enemy_list:
+            enemy_rect.x -= 5
+
+            if enemy_rect.bottom == 364:
+                screen.blit(first_character, enemy_rect)
+            else:
+                screen.blit(enemy2_character, enemy_rect)
+
+        enemy_list = [enemy for enemy in enemy_list if enemy.x > -100]
+
+        return enemy_list
+    else:
+        return []
+
+
+def collisions(player, enemies):
+    if enemies:
+        for enemy_rect in enemies:
+            if player.colliderect(enemy_rect):
+                return False
+    return True
 
 
 pygame.init()
@@ -32,13 +58,19 @@ background = pygame.image.load('graphics/background2.png').convert()
 
 tileGrass1 = pygame.image.load('graphics/platforms/grass1.png').convert()
 
+
 first_character = pygame.image.load(
     'graphics/characters/enemy_1.png').convert_alpha()
-first_char_rect = first_character.get_rect(topleft=(350, 314))
+enemy2_character = pygame.image.load(
+    'graphics/characters/enemy_2.png').convert_alpha()
+
+
+enemy_rect_list = []
+
 
 main_character = pygame.image.load(
     'graphics/characters/tile000.png').convert_alpha()
-main_rect = main_character.get_rect(bottomleft=(75, 364))
+main_rect = main_character.get_rect(midbottom=(75, 364))
 
 menu_player = pygame.image.load(
     'graphics/characters/tile000.png').convert_alpha()
@@ -47,8 +79,9 @@ menu_player_rect = menu_player.get_rect(center=(400, 200))
 
 player_grav = 0
 
-# main_title = test_font.render('Corre Walter!', False, '#E9D5D8')
-#title_rect = main_title.get_rect(center=(400, 50))
+# Timer
+obstacle_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(obstacle_timer, 1500)
 
 while True:
     for event in pygame.event.get():
@@ -71,8 +104,15 @@ while True:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     game_active = True
-                    first_char_rect.left = 800
                     start_time = int(pygame.time.get_ticks()/1000)
+
+        if event.type == obstacle_timer and game_active:
+            if (randint(0, 2)):
+                enemy_rect_list.append(first_character.get_rect(
+                    bottomleft=(randint(900, 1100), 364)))
+            else:
+                enemy_rect_list.append(enemy2_character.get_rect(
+                    bottomleft=(randint(900, 1100), 290)))
 
     if game_active:
 
@@ -92,27 +132,32 @@ while True:
         # pygame.draw.rect(screen, '#52ABE6', title_rect, 10)
         # screen.blit(main_title, (title_rect))
 
-        first_char_rect.left -= 5
-        if first_char_rect.right <= 0:
-            first_char_rect.left = 800
-        screen.blit(first_character, (first_char_rect))
+        # first_char_rect.left -= 5
+        # if first_char_rect.right <= 0:
+        # first_char_rect.left = 800
+        # screen.blit(first_character, (first_char_rect))
 
         # Player
         player_grav += 1
         main_rect.y += player_grav
         if main_rect.bottom >= 365:
             main_rect.bottom = 365
+
         screen.blit(main_character, (main_rect))
 
+        enemy_rect_list = enemy_movement(enemy_rect_list)
+
         # Collision with Enemy
-        if first_char_rect.colliderect(main_rect):
-            game_active = False
+        game_active = collisions(main_rect, enemy_rect_list)
 
         score = display_score()
 
     else:
         screen.fill('#5355ac')
         screen.blit(menu_player, (menu_player_rect))
+        enemy_rect_list.clear()
+        main_rect.midbottom = (75, 364)
+        player_grav = 0
 
         your_score = test_font.render(f'Your Score: {score}', False, '#ec0909')
         your_score_rect = your_score.get_rect(center=(400, 300))
